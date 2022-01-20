@@ -21,8 +21,12 @@ class MoviesView(Resource):
 
     def post(self):
         req_json = request.json
-        movie_service.create_movie(req_json)
-        return "", 204
+        movie = movie_service.create_movie(req_json)
+        response = jsonify()
+        response.status_code = 201
+        response.headers['location'] = f"/movies/{movie.id}/"
+        response.autocorrect_location_header = False
+        return response
 
 
 @movies_ns.route('/<int:uid>')

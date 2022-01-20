@@ -4,12 +4,9 @@ from container import genre_service
 from dao.model.genre import GenreSchema
 from flask import request, jsonify, make_response
 
-
-
 genres_ns = Namespace('genres')
 genre_schema = GenreSchema()
 genres_schema = GenreSchema(many=True)
-
 
 
 @genres_ns.route('/')
@@ -19,8 +16,12 @@ class GenresView(Resource):
 
     def post(self):
         req_json = request.json
-        genre_service.create_genre(req_json)
-        return "", 204
+        genre = genre_service.create_genre(req_json)
+        response = jsonify()
+        response.status_code = 201
+        response.headers['location'] = f"/genres/{genre.id}/"
+        response.autocorrect_location_header = False
+        return response
 
 
 @genres_ns.route('/<int:uid>')

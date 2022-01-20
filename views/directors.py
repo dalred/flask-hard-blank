@@ -4,12 +4,9 @@ from container import director_service
 from dao.model.director import DirectorSchema
 from flask import request, jsonify, make_response
 
-
-
 directors_ns = Namespace('directors')
 director_schema = DirectorSchema()
 directors_schema = DirectorSchema(many=True)
-
 
 
 @directors_ns.route('/')
@@ -19,8 +16,12 @@ class DirectorsView(Resource):
 
     def post(self):
         req_json = request.json
-        director_service.create_director(req_json)
-        return "", 204
+        director = director_service.create_director(req_json)
+        response = jsonify()
+        response.status_code = 201
+        response.headers['location'] = f"/directors/{director.id}/"
+        response.autocorrect_location_header = False
+        return response
 
 
 @directors_ns.route('/<int:uid>')
